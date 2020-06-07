@@ -68,4 +68,28 @@ class Database extends Api
     {
         return "https://{$this->getProjectId()}.firebaseio.com";
     }
+
+    /**
+     * @param string $resourceName
+     * @param array  $params
+     *
+     * @return DatabaseGetResponse
+     * @throws FirebaseApiException
+     */
+    public function getByParams(string $resourceName, array $params): DatabaseGetResponse
+    {
+        $joinedParams = [];
+
+        foreach ($params as $key => $value) {
+            $joinedParams[] = "{$key}={$value}";
+        }
+
+        $joinedParams = implode('&', $joinedParams);
+
+        $url = $this->getDatabaseUrl() . "/{$resourceName}.json?{$joinedParams}";
+
+        $response = $this->request(RequestMethods::GET, $url, null);
+
+        return new DatabaseGetResponse($response);
+    }
 }
