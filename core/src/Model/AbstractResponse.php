@@ -8,7 +8,7 @@ use stdClass;
 abstract class AbstractResponse
 {
     private ResponseInterface $guzzleResponse;
-    private stdClass          $decodedResponse;
+    private ?stdClass          $decodedResponse = null;
 
     /**
      * @param ResponseInterface $guzzleResponse
@@ -19,9 +19,9 @@ abstract class AbstractResponse
     }
 
     /**
-     * @return stdClass
+     * @return stdClass|null
      */
-    protected function getStdResponse(): stdClass
+    protected function getStdResponse(): ?stdClass
     {
         if ( ! $this->decodedResponse) {
             $this->decodedResponse = json_decode($this->guzzleResponse->getBody()->getContents());
