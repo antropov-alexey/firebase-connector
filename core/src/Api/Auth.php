@@ -2,6 +2,7 @@
 
 namespace App\Api;
 
+use App\Enum\BasePaths;
 use App\Enum\Operations;
 use App\Enum\RequestMethods;
 use App\Exception\FirebaseApiException;
@@ -21,8 +22,11 @@ class Auth extends Api
      */
     public function register(string $email, string $password): RegisterResponse
     {
-        $request  = new RegisterRequest($email, $password, true);
-        $response = $this->request(RequestMethods::POST, Operations::REGISTER, $request);
+        $request = new RegisterRequest($email, $password, true);
+
+        $url = $this->getAuthUrl() . Operations::REGISTER;
+
+        $response = $this->request(RequestMethods::POST, $url, $request);
 
         return new RegisterResponse($response);
     }
@@ -38,8 +42,18 @@ class Auth extends Api
     {
         $request = new LoginRequest($email, $password, true);
 
-        $response = $this->request(RequestMethods::POST, Operations::LOGIN, $request);
+        $url = $this->getAuthUrl() . Operations::LOGIN;
+
+        $response = $this->request(RequestMethods::POST, $url, $request);
 
         return new LoginResponse($response);
+    }
+
+    /**
+     * @return string
+     */
+    private function getAuthUrl(): string
+    {
+        return BasePaths::AUTH;
     }
 }

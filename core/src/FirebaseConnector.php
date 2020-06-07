@@ -3,42 +3,46 @@
 namespace App;
 
 use App\Api\Auth;
+use App\Api\Database;
 use App\Enum\BasePaths;
 use App\Factories\ErrorFactory;
 use GuzzleHttp\Client;
 
 class FirebaseConnector
 {
-    /**
-     * @var Auth
-     */
-    private Auth $auth;
+    private Auth     $auth;
+    private Database $database;
 
     /**
-     * FirebaseConnector constructor.
-     *
-     * @param Auth $auth
+     * @param Auth     $auth
+     * @param Database $database
      */
-    public function __construct(Auth $auth)
+    public function __construct(Auth $auth, Database $database)
     {
-        $this->auth = $auth;
+        $this->auth     = $auth;
+        $this->database = $database;
     }
 
     /**
      * @param string $authKey
+     * @param string $projectId
      *
      * @return FirebaseConnector
      */
-    public static function make(string $authKey): FirebaseConnector
+    public static function make(string $authKey, string $projectId): FirebaseConnector
     {
         $client = new Client([
-            'base_uri' => BasePaths::AUTH,
             'headers'  => [
                 'Content-Type: application/json',
             ],
         ]);
 
-        return new self(new Auth($authKey, $client, new ErrorFactory()));
+        $errorFactory = new ErrorFactory();
+
+        return new self(
+            new Auth($authKey, $projectId, $client, $errorFactory),
+            new Database($authKey, $projectId, $client, $errorFactory)
+        );
     }
 
     /**
@@ -47,5 +51,13 @@ class FirebaseConnector
     public function auth(): Auth
     {
         return $this->auth;
+    }
+
+    /**
+     * @return Database
+     */
+    public function database(): Database
+    {
+        return $this->database;
     }
 }
