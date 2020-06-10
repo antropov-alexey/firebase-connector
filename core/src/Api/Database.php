@@ -5,6 +5,7 @@ namespace App\Api;
 use App\Enum\RequestMethods;
 use App\Exception\FirebaseApiException;
 use App\Model\Database\DatabaseModelInterface;
+use App\Model\Request\Database\DatabaseGetRequest;
 use App\Model\Request\Database\DatabaseWriteRequest;
 use App\Model\Response\Database\DatabaseGetResponse;
 use App\Model\Response\Database\DatabaseWriteResponse;
@@ -22,7 +23,7 @@ class Database extends Api
     {
         $url = $this->getDatabaseUrl() . "/{$resourceName}/{$resourceId}.json";
 
-        $response = $this->request(RequestMethods::GET, $url, null);
+        $response = $this->request(RequestMethods::GET, $url, new DatabaseGetRequest($this->getAuthKey()));
 
         return new DatabaseGetResponse($response);
     }
@@ -38,7 +39,7 @@ class Database extends Api
     {
         $url = $this->getDatabaseUrl() . "/{$resourceName}.json";
 
-        $request = new DatabaseWriteRequest($databaseModel);
+        $request = new DatabaseWriteRequest($databaseModel, $this->getAuthKey());
 
         $response = $this->request(RequestMethods::POST, $url, $request);
 
@@ -57,7 +58,7 @@ class Database extends Api
     {
         $url = $this->getDatabaseUrl() . "/{$resourceName}/{$resourceId}.json";
 
-        $request = new DatabaseWriteRequest($databaseModel);
+        $request = new DatabaseWriteRequest($databaseModel, $this->getAuthKey());
 
         $response = $this->request(RequestMethods::PUT, $url, $request);
 

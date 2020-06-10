@@ -9,19 +9,21 @@ use GuzzleHttp\RequestOptions;
 class DatabaseWriteRequest implements RequestInterface
 {
     private DatabaseModelInterface $databaseModel;
+    private string                 $authKey;
 
-    public function __construct(DatabaseModelInterface $databaseModel)
+    public function __construct(DatabaseModelInterface $databaseModel, string $authKey)
     {
         $this->databaseModel = $databaseModel;
+        $this->authKey       = $authKey;
     }
 
-    public function serialize(): array
+    public function getOptions(): array
     {
-        return $this->databaseModel->toArray();
-    }
-
-    public function getParamsOption(): string
-    {
-        return RequestOptions::JSON;
+        return [
+            RequestOptions::JSON  => $this->databaseModel->toArray(),
+            RequestOptions::QUERY => [
+                'key' => $this->authKey,
+            ],
+        ];
     }
 }
