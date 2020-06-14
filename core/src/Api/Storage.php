@@ -27,12 +27,13 @@ class Storage extends Api
     /**
      * @param string $accessToken
      * @param string $fileName
+     * @param string $newFileName
      *
      * @throws FirebaseApiException
      */
-    public function download(string $accessToken, string $fileName): void
+    public function download(string $accessToken, string $fileName, string $newFileName): void
     {
-        $resource = fopen($fileName, 'w');
+        $resource = fopen($newFileName, 'w');
 
         $request = new DownloadObjectRequest($accessToken, $resource);
 
